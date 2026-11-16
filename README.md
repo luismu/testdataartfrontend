@@ -87,10 +87,35 @@ pnpm test
 ```bash
 pnpm run test:e2e
 ```
-- **10 / 10 tests passing across Desktop Chromium and Desktop Firefox**:
-  - Validates note creation with specified size and position.
-  - Validates moving note by dragging header handle.
-  - Validates resizing note by dragging bottom-right corner.
-  - Validates inline text editing and color palette switching.
-  - Validates drag-to-delete collision over the Trash zone.
-  - Validates LocalStorage restoration across page reloads.
+
+#### Automated Cross-Browser Test Report
+
+| Test Case | Chromium (Chrome/Edge) | Firefox | Status |
+|---|:---:|:---:|:---:|
+| **1. Create Note (Specified Size & Position)**<br>*(Opens modal, enters custom dimensions X:180, Y:140, 280×240px, picks Soft Green)* |  PASSED |  PASSED |  Pass |
+| **2. Move Note by Dragging**<br>*(Pointer capture on header, moves +120px X, +80px Y)* |  PASSED |  PASSED |  Pass |
+| **3. Resize Note by Dragging**<br>*(Drags SE corner handle +60px W, +40px H, verifies dimension badge)* |  PASSED |  PASSED |  Pass |
+| **4. Color Switching & Text Editing**<br>*(Types text, selects Rose Pink, reloads page, validates persistence)* |  PASSED |  PASSED |  Pass |
+| **5. Delete Note via Trash Zone**<br>*(Drags over predefined trash, triggers `.trash-hovered`, releases to delete)* |  PASSED |  PASSED |  Pass |
+
+```text
+Running 10 tests using 4 workers
+
+  ✓ [chromium] › e2e/sticky-notes.spec.ts:11:3 › loads desktop workspace and creates a note of specified size and position (1.6s)
+  ✓ [chromium] › e2e/sticky-notes.spec.ts:38:3 › moves a note by dragging the header handle (1.1s)
+  ✓ [chromium] › e2e/sticky-notes.spec.ts:59:3 › resizes a note by dragging the bottom-right resize handle (1.1s)
+  ✓ [chromium] › e2e/sticky-notes.spec.ts:82:3 › changes note color and preserves content on page reload (1.2s)
+  ✓ [chromium] › e2e/sticky-notes.spec.ts:100:3 › removes a note by dragging it over the predefined trash zone (998ms)
+  ✓ [firefox]  › e2e/sticky-notes.spec.ts:11:3 › loads desktop workspace and creates a note of specified size and position (3.9s)
+  ✓ [firefox]  › e2e/sticky-notes.spec.ts:38:3 › moves a note by dragging the header handle (3.8s)
+  ✓ [firefox]  › e2e/sticky-notes.spec.ts:59:3 › resizes a note by dragging the bottom-right resize handle (3.6s)
+  ✓ [firefox]  › e2e/sticky-notes.spec.ts:82:3 › changes note color and preserves content on page reload (3.7s)
+  ✓ [firefox]  › e2e/sticky-notes.spec.ts:100:3 › removes a note by dragging it over the predefined trash zone (1.7s)
+
+  10 passed (10.1s)
+```
+
+To view the interactive HTML report with DOM snapshots and traces:
+```bash
+pnpm exec playwright show-report
+```
