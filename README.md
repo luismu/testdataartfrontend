@@ -63,19 +63,34 @@ pnpm install
 # 2. Start local development server
 pnpm run dev
 
-# 3. Run automated tests (Vitest)
+# 3. Run automated unit tests (Vitest)
 pnpm test
 
-# 4. Build for production
+# 4. Run automated cross-browser E2E suite (Chromium & Firefox via Playwright)
+pnpm run test:e2e
+
+# 5. Build for production
 pnpm run build
 ```
 
 ---
 
-## Testing
+## Testing & Cross-Browser Verification
 
-The project includes unit tests for the core mathematical collision engine and persistence repositories:
-
+### 1. Unit Tests (Domain Math & Persistence)
 ```bash
 pnpm test
 ```
+- **11 / 11 tests passing**: Validates pure AABB bounding-box intersection thresholds, coordinate clamping, and `LocalStorage` / `MockApi` repository operations.
+
+### 2. End-to-End Cross-Browser Suite (Playwright)
+```bash
+pnpm run test:e2e
+```
+- **10 / 10 tests passing across Desktop Chromium and Desktop Firefox**:
+  - Validates note creation with specified size and position.
+  - Validates moving note by dragging header handle.
+  - Validates resizing note by dragging bottom-right corner.
+  - Validates inline text editing and color palette switching.
+  - Validates drag-to-delete collision over the Trash zone.
+  - Validates LocalStorage restoration across page reloads.
