@@ -53,8 +53,8 @@ export const Board: React.FC = () => {
   const handleCanvasPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDrawMode || e.button !== 0 || !boardRef.current) return;
 
-    // Don't start drawing if clicking inside an existing note or toolbar
-    if ((e.target as HTMLElement).closest('.sticky-note, .app-toolbar, .trash-zone, .modal-dialog')) {
+    // Don't start drawing if clicking inside an existing note, toolbar, or footer
+    if ((e.target as HTMLElement).closest('.sticky-note, .app-toolbar, .trash-zone, .modal-dialog, .app-footer')) {
       return;
     }
 
@@ -195,6 +195,21 @@ export const Board: React.FC = () => {
 
         {/* Predefined Trash Zone for drag-to-delete */}
         <TrashZone isHovered={isHoveringTrash} onRegisterRect={registerTrashRect} />
+
+        {/* Author Footer */}
+        <footer className="app-footer" onPointerDown={(e) => e.stopPropagation()}>
+          <span>
+            Created with <span className="heart-icon">❤️</span> by{' '}
+            <a
+              href="https://www.linkedin.com/in/luismu19/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="author-link"
+            >
+              Luis Murillo
+            </a>
+          </span>
+        </footer>
       </main>
 
       {/* Modal for creating a note of specified position and dimensions */}
