@@ -22,12 +22,17 @@ export function useNotes() {
   const [storageType, setStorageType] = useState<StorageProviderType>('local');
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [isHoveringTrash, setIsHoveringTrash] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   // Trash zone bounding rect for collision detection
   const trashRectRef = useRef<Rect | null>(null);
 
-  // Repository instances
+  // Track if initial seed has been evaluated per storage engine
+  const seededStorageRef = useRef<{ local: boolean; 'mock-api': boolean }>({
+    local: false,
+    'mock-api': false,
+  });
+
+  // Isolated repository instances
   const localRepoRef = useRef<INotesRepository>(new LocalStorageNotesRepository());
   const mockApiRepoRef = useRef<INotesRepository>(new MockApiNotesRepository());
 
@@ -40,30 +45,52 @@ export function useNotes() {
     let isCancelled = false;
     const load = async () => {
       setSyncStatus('saving');
+      setSelectedNoteId(null);
+      setIsHoveringTrash(false);
+
       try {
         const repo = getActiveRepo();
         const data = await repo.getAll();
+
         if (!isCancelled) {
-          if (data.length === 0 && !isLoaded) {
-            // Seed with an initial sample note if completely empty
-            const initialNote: Note = {
-              id: 'sample-1',
-              content: 'Welcome to Sticky Notes! 📝\n\n• Drag me around\n• Resize from corners\n• Drag to Trash to delete',
-              x: 80,
-              y: 80,
-              width: 260,
-              height: 220,
-              zIndex: 1,
-              color: DEFAULT_COLOR_ID,
-              createdAt: Date.now(),
-              updatedAt: Date.now(),
-            };
-            await repo.upsert(initialNote);
-            setNotes([initialNote]);
+          if (data.length === 0 && !seededStorageRef.current[storageType]) {
+            seededStorageRef.current[storageType] = true;
+
+            const seedNote: Note =
+              storageType === 'local'
+                ? {
+                    id: 'local-sample-1',
+                    content:
+                      'Local Sticky Note 📝\n\n• Stored in browser LocalStorage\n• Drag me around or resize\n• Drag to Trash to delete',
+                    x: 80,
+                    y: 80,
+                    width: 260,
+                    height: 220,
+                    zIndex: 1,
+                    color: DEFAULT_COLOR_ID,
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                  }
+                : {
+                    id: 'api-sample-1',
+                    content:
+                      '🌐 Mock REST API Note\n\n• Stored on simulated remote server\n• Asynchronous sync with latency\n• 100% isolated from LocalStorage',
+                    x: 100,
+                    y: 100,
+                    width: 280,
+                    height: 220,
+                    zIndex: 1,
+                    color: 'blue',
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                  };
+
+            await repo.upsert(seedNote);
+            setNotes([seedNote]);
           } else {
+            seededStorageRef.current[storageType] = true;
             setNotes(data);
           }
-          setIsLoaded(true);
           setSyncStatus('synced');
         }
       } catch (err) {
@@ -76,7 +103,7 @@ export function useNotes() {
     return () => {
       isCancelled = true;
     };
-  }, [getActiveRepo, isLoaded]);
+  }, [getActiveRepo, storageType]);
 
   // Helper to persist list
   const persistNotes = useCallback(
@@ -218,7 +245,7 @@ export function useNotes() {
     [persistNotes]
   );
 
-  // Delete note (Core Feature 4)
+  // Delete single note (Core Feature 4)
   const deleteNote = useCallback(
     (id: string) => {
       setNotes((prev) => {
@@ -233,6 +260,22 @@ export function useNotes() {
     },
     [persistNotes, selectedNoteId]
   );
+
+  // Clear all notes ONLY in the active storage mode
+  const clearAllNotes = useCallback(async () => {
+    setSyncStatus('saving');
+    try {
+      const repo = getActiveRepo();
+      await repo.saveAll([]);
+      setNotes([]);
+      setSelectedNoteId(null);
+      setIsHoveringTrash(false);
+      setSyncStatus('synced');
+    } catch (err) {
+      console.error('Failed to clear notes in active storage', err);
+      setSyncStatus('error');
+    }
+  }, [getActiveRepo]);
 
   // Register Trash zone element rect
   const registerTrashRect = useCallback((rect: Rect | null) => {
@@ -255,13 +298,13 @@ export function useNotes() {
     setStorageType,
     syncStatus,
     isHoveringTrash,
-    isLoaded,
     createNote,
     updateNotePosition,
     updateNoteDimensions,
     updateNoteContent,
     updateNoteColor,
     deleteNote,
+    clearAllNotes,
     bringToFront,
     registerTrashRect,
     checkTrashCollision,

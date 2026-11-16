@@ -5,14 +5,26 @@ export interface INotesRepository {
   saveAll(notes: Note[]): Promise<void>;
   upsert(note: Note): Promise<Note>;
   delete(id: string): Promise<void>;
+  clear(): Promise<void>;
 }
 
-const LOCAL_STORAGE_KEY = 'sticky_notes_data_v1';
+export const LOCAL_STORAGE_KEY = 'sticky_notes_local_db_v1';
+export const MOCK_API_STORAGE_KEY = 'sticky_notes_mock_api_db_v1';
 
+/**
+ * Concrete implementation for LocalStorage persistence (Bonus III).
+ * Fully isolated client-side database.
+ */
 export class LocalStorageNotesRepository implements INotesRepository {
+  private key: string;
+
+  constructor(key = LOCAL_STORAGE_KEY) {
+    this.key = key;
+  }
+
   async getAll(): Promise<Note[]> {
     try {
-      const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const data = localStorage.getItem(this.key);
       if (!data) return [];
       const parsed = JSON.parse(data);
       return Array.isArray(parsed) ? parsed : [];
@@ -24,7 +36,7 @@ export class LocalStorageNotesRepository implements INotesRepository {
 
   async saveAll(notes: Note[]): Promise<void> {
     try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
+      localStorage.setItem(this.key, JSON.stringify(notes));
     } catch (e) {
       console.error('Failed to save notes to localStorage', e);
     }
@@ -47,28 +59,25 @@ export class LocalStorageNotesRepository implements INotesRepository {
     const filtered = notes.filter((n) => n.id !== id);
     await this.saveAll(filtered);
   }
+
+  async clear(): Promise<void> {
+    localStorage.removeItem(this.key);
+  }
 }
 
 /**
- * Mock REST API implementation satisfying Bonus V.
- * Simulates asynchronous HTTP network roundtrips with delays.
+ * Concrete implementation for Mock REST API (Bonus V).
+ * Simulates asynchronous HTTP network roundtrips with configurable latency.
+ * Stores its data in an isolated storage key ('sticky_notes_mock_api_db_v1')
+ * representing an independent remote server database.
  */
 export class MockApiNotesRepository implements INotesRepository {
-  private inMemoryDb: Map<string, Note> = new Map();
+  private key: string;
   private latencyMs: number;
 
-  constructor(latencyMs = 300) {
+  constructor(latencyMs = 300, key = MOCK_API_STORAGE_KEY) {
     this.latencyMs = latencyMs;
-    // Pre-populate from localStorage if available to maintain continuity
-    try {
-      const existing = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (existing) {
-        const parsed: Note[] = JSON.parse(existing);
-        parsed.forEach((n) => this.inMemoryDb.set(n.id, n));
-      }
-    } catch {
-      // Ignore initial load error
-    }
+    this.key = key;
   }
 
   private async delay(): Promise<void> {
@@ -77,25 +86,56 @@ export class MockApiNotesRepository implements INotesRepository {
 
   async getAll(): Promise<Note[]> {
     await this.delay();
-    return Array.from(this.inMemoryDb.values());
+    try {
+      const data = localStorage.getItem(this.key);
+      if (!data) return [];
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      console.error('Failed to fetch from Mock API', e);
+      return [];
+    }
   }
 
   async saveAll(notes: Note[]): Promise<void> {
     await this.delay();
-    this.inMemoryDb.clear();
-    notes.forEach((n) => this.inMemoryDb.set(n.id, n));
-    // Keep localStorage in sync as backup
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(notes));
+    try {
+      localStorage.setItem(this.key, JSON.stringify(notes));
+    } catch (e) {
+      console.error('Failed to save to Mock API', e);
+    }
   }
 
   async upsert(note: Note): Promise<Note> {
     await this.delay();
-    this.inMemoryDb.set(note.id, note);
+    const notes = await this.getAll();
+    const index = notes.findIndex((n) => n.id === note.id);
+    if (index >= 0) {
+      notes[index] = note;
+    } else {
+      notes.push(note);
+    }
+    try {
+      localStorage.setItem(this.key, JSON.stringify(notes));
+    } catch (e) {
+      console.error('Failed to upsert to Mock API', e);
+    }
     return note;
   }
 
   async delete(id: string): Promise<void> {
     await this.delay();
-    this.inMemoryDb.delete(id);
+    const notes = await this.getAll();
+    const filtered = notes.filter((n) => n.id !== id);
+    try {
+      localStorage.setItem(this.key, JSON.stringify(filtered));
+    } catch (e) {
+      console.error('Failed to delete from Mock API', e);
+    }
+  }
+
+  async clear(): Promise<void> {
+    await this.delay();
+    localStorage.removeItem(this.key);
   }
 }

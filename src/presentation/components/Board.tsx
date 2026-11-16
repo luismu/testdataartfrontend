@@ -22,6 +22,7 @@ export const Board: React.FC = () => {
     updateNoteContent,
     updateNoteColor,
     deleteNote,
+    clearAllNotes,
     bringToFront,
     registerTrashRect,
     checkTrashCollision,
@@ -114,10 +115,11 @@ export const Board: React.FC = () => {
     setDrawRect(null);
   };
 
-  // Clear all notes helper
+  // Clear all notes helper for active storage mode
   const handleClearAll = () => {
-    if (window.confirm('Are you sure you want to delete all notes?')) {
-      notes.forEach((n) => deleteNote(n.id));
+    const modeLabel = storageType === 'local' ? 'LocalStorage' : 'Mock REST API';
+    if (window.confirm(`Are you sure you want to delete all notes in ${modeLabel}?`)) {
+      clearAllNotes();
     }
   };
 
