@@ -127,8 +127,8 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
         >
           <svg
             viewBox="0 0 24 24"
-            width="22"
-            height="22"
+            width="34"
+            height="34"
             fill="none"
             className="thumbtack-svg"
           >
