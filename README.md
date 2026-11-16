@@ -55,7 +55,12 @@ The application follows a Clean / Layered Architecture adhering to SOLID princip
 
 ### Prerequisites
 - Node.js `v18+` or `v20+` (tested on Node v26)
-- `pnpm` (or `npm`)
+- `pnpm` (required package manager)
+
+### Dependency & Security Policy
+
+- **`pnpm` over `npm`**: Chosen deliberately to prevent supply-chain vulnerabilities common to npm's flat/hoisted tree. `pnpm` uses a strict content-addressable store, prevents phantom dependencies, and enforces build script authorization policies (`pnpm approve-builds`) to block untrusted postinstall scripts.
+- **Strict Version Pinning (No `^` Caret)**: All dependencies and devDependencies in `package.json` are pinned to exact versions (e.g., `"react": "19.3.1"` rather than `"^19.0.0"`). Avoiding the circumflex (`^`) eliminates the unpredictability of automatic minor/patch updates, ensuring 100% deterministic, hermetic, and reproducible builds across developer machines and CI/CD pipelines.
 
 ### Installation & Run
 
