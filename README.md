@@ -1,4 +1,4 @@
-# Sticky Notes Desktop Application (React + TypeScript)
+# Sticky Notes Desktop Application - Luis Murillo (React + TypeScript)
 
 A lightweight desktop single-page application for interactive sticky notes, engineered from first principles in **React 19** and **TypeScript** without third-party component libraries or drag-and-drop frameworks.
 
