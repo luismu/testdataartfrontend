@@ -468,6 +468,36 @@ html, body, #root {
   line-height: 1.45;
   user-select: text;
   -webkit-user-select: text;
+  padding-right: 4px;
+
+  /* Firefox custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Chromium, Edge & Safari custom scrollbar */
+.note-textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+.note-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.note-textarea::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 9999px;
+  transition: background 0.15s ease;
+}
+
+.note-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.note-textarea::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .note-textarea::placeholder {
