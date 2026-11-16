@@ -135,7 +135,7 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
             <span></span>
           </div>
 
-          <div className="header-actions">
+          <div className="header-actions" onPointerDown={(e) => e.stopPropagation()}>
             {/* Color switcher dots */}
             <div className="color-palette-inline">
               {Object.values(NOTE_COLORS).map((c) => (
@@ -145,6 +145,7 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
                   className={`color-dot ${note.color === c.id ? 'active' : ''}`}
                   style={{ backgroundColor: c.bg, borderColor: c.border }}
                   title={`Change color to ${c.name}`}
+                  onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
                     onColorChange(note.id, c.id);
@@ -157,6 +158,7 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
               type="button"
               className="note-delete-btn"
               title="Delete note"
+              onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(note.id);
