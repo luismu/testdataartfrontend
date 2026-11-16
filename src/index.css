@@ -297,20 +297,33 @@ html, body, #root {
   transform: translateX(-50%) translateY(0) scale(1) rotate(0deg);
   pointer-events: none;
   z-index: 25;
-  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
 }
 
-.sticky-thumbtack.unpinned {
-  transform: translateX(-50%) translateY(-26px) scale(1.08) rotate(-10deg);
-  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.22));
+/* Phase 1: Resting on corkboard */
+.sticky-thumbtack.pin-phase-pinned {
+  animation: pinImpact 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Phase 2: Pulling straight up and disappearing */
+.sticky-thumbtack.pin-phase-unpinning {
+  animation: unpinPullOut 0.28s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+/* Phase 3: Moving with note (pin is completely removed) */
+.sticky-thumbtack.pin-phase-dragging {
+  display: none;
+}
+
+/* Phase 4: Plunging down from above on drop */
+.sticky-thumbtack.pin-phase-pinning {
+  animation: pinPlungeDown 0.2s ease-in forwards;
 }
 
 .thumbtack-img {
   display: block;
   user-select: none;
   -webkit-user-drag: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .thumbtack-img.pin-pinned {
@@ -323,14 +336,42 @@ html, body, #root {
   height: auto;
 }
 
-.thumbtack-img.visible {
-  display: block;
-  opacity: 1;
+@keyframes unpinPullOut {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1) rotate(0deg);
+  }
+  40% {
+    opacity: 0.95;
+    transform: translateX(-50%) translateY(-22px) scale(1) rotate(-6deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-55px) scale(0.8) rotate(-14deg);
+  }
 }
 
-.thumbtack-img.hidden {
-  display: none;
-  opacity: 0;
+@keyframes pinPlungeDown {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50px) scale(0.85);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes pinImpact {
+  0% {
+    transform: translateX(-50%) translateY(-6px) scale(1.12);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
 }
 
 /* Header & Drag Area */

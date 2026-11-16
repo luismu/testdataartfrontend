@@ -106,9 +106,8 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
 
     return (
       <div
-        className={`sticky-note ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''} ${
-          isResizing ? 'resizing' : ''
-        }`}
+        className={`sticky-note ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''} ${isResizing ? 'resizing' : ''
+          }`}
         style={{
           transform: `translate3d(${livePos.x}px, ${livePos.y}px, 0)`,
           width: `${liveDim.width}px`,
@@ -120,7 +119,7 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
         }}
         onPointerDown={() => onBringToFront(note.id)}
       >
-        {/* Pushpin / Chincheta (switches between pinned and unpinned states) */}
+        {/* Pushpin (switches between pinned and unpinned states) */}
         <div
           className={`sticky-thumbtack ${isDragging ? 'unpinned' : 'pinned'}`}
           aria-hidden="true"
