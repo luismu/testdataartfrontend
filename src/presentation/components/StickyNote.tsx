@@ -189,24 +189,6 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
           </div>
 
           <div className="header-actions" onPointerDown={(e) => e.stopPropagation()}>
-            {/* Color switcher dots */}
-            <div className="color-palette-inline">
-              {Object.values(NOTE_COLORS).map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  className={`color-dot ${note.color === c.id ? 'active' : ''}`}
-                  style={{ backgroundColor: c.bg, borderColor: c.border }}
-                  title={`Change color to ${c.name}`}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onColorChange(note.id, c.id);
-                  }}
-                />
-              ))}
-            </div>
-
             <button
               type="button"
               className="note-delete-btn"
@@ -234,14 +216,33 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
           />
         </div>
 
-        {/* Note Footer Info */}
-        <div className="sticky-note-footer">
-          <span className="dimension-badge">
-            {Math.round(liveDim.width)} × {Math.round(liveDim.height)}
-          </span>
-          <span className="pos-badge">
-            X:{Math.round(livePos.x)} Y:{Math.round(livePos.y)}
-          </span>
+        {/* Note Footer Info & Palette */}
+        <div className="sticky-note-footer" onPointerDown={(e) => e.stopPropagation()}>
+          <div className="color-palette-inline">
+            {Object.values(NOTE_COLORS).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                className={`color-dot ${note.color === c.id ? 'active' : ''}`}
+                style={{ backgroundColor: c.bg, borderColor: c.border }}
+                title={`Change color to ${c.name}`}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onColorChange(note.id, c.id);
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="footer-badges">
+            <span className="dimension-badge">
+              {Math.round(liveDim.width)} × {Math.round(liveDim.height)}
+            </span>
+            <span className="pos-badge">
+              X:{Math.round(livePos.x)} Y:{Math.round(livePos.y)}
+            </span>
+          </div>
         </div>
 
         {/* Resize Handle (Bottom-Right) */}
