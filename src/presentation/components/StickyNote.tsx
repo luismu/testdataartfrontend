@@ -120,33 +120,23 @@ export const StickyNote: React.FC<StickyNoteProps> = memo(
         }}
         onPointerDown={() => onBringToFront(note.id)}
       >
-        {/* Pushpin / Chincheta (pulls out during drag, pins back on release) */}
+        {/* Pushpin / Chincheta (switches between pinned and unpinned states) */}
         <div
           className={`sticky-thumbtack ${isDragging ? 'unpinned' : 'pinned'}`}
           aria-hidden="true"
         >
-          <svg
-            viewBox="0 0 24 24"
-            width="34"
-            height="34"
-            fill="none"
-            className="thumbtack-svg"
-          >
-            <path d="M12 15V22" stroke="#64748b" strokeWidth="2" strokeLinecap="round" />
-            <ellipse cx="12" cy="14" rx="4.5" ry="1.8" fill="#991b1b" />
-            <path
-              d="M8.5 7C8.5 7 9.5 13 10 14H14C14.5 13 15.5 7 15.5 7H8.5Z"
-              fill="url(#pinGradient)"
-            />
-            <circle cx="12" cy="6.5" r="4" fill="#ef4444" />
-            <ellipse cx="10.8" cy="5.2" rx="1.5" ry="0.9" fill="#fca5a5" opacity="0.8" />
-            <defs>
-              <linearGradient id="pinGradient" x1="8.5" y1="7" x2="15.5" y2="14" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#ef4444" />
-                <stop offset="1" stopColor="#b91c1c" />
-              </linearGradient>
-            </defs>
-          </svg>
+          <img
+            src="/pin-pinned.png"
+            alt=""
+            className={`thumbtack-img pin-pinned ${!isDragging ? 'visible' : 'hidden'}`}
+            draggable={false}
+          />
+          <img
+            src="/pin-unpinned.png"
+            alt=""
+            className={`thumbtack-img pin-unpinned ${isDragging ? 'visible' : 'hidden'}`}
+            draggable={false}
+          />
         </div>
 
         {/* Note Header / Drag Handle */}
