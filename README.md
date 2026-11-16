@@ -46,6 +46,9 @@ The application follows a Clean / Layered Architecture adhering to SOLID princip
   - Microsoft Edge (latest)
   - Apple Safari (latest)
 
+> **Empirical Cross-Browser Validation (Not Just a Claim)**:  
+> Rather than simply stating compatibility on paper, cross-browser behavior was programmatically verified and audited using **Playwright**. Real browser engines—**Chromium** (powering Google Chrome and Microsoft Edge) and **Firefox** (Gecko)—were instantiated to execute identical automated user journeys (pointer capture drag-and-drop, corner resizing math, DOM collision detection, and localStorage lifecycle). The complete reproducible test suite is included in this repository.
+
 ---
 
 ## Getting Started
